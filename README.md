@@ -77,9 +77,67 @@ make test_fast
 
 After each pull it's recommended to run `make` to re-compile internal C++ and protobuf code.
 
+**Adaptation for SAILING Lab Qlustar OS server**
+```
+# Clone the repo with submodules:
+git clone --recursive https://github.com/Antoine-Bergerault/diplomacy_cicero.git diplomacy_cicero
+
+# Create conda env
+conda create --yes -n diplomacy_cicero python=3.7
+conda activate diplomacy_cicero
+
+# Install pytorch, pybind11
+conda install --yes pytorch=1.7.1 torchvision cudatoolkit=11.0 -c pytorch
+conda install --yes pybind11
+
+# Install go for boringssl in grpc
+conda install --yes go protobuf=3.19.1
+
+# Install cudNN
+conda install --yes -c anaconda cudnn
+
+# Get and compile glog
+wget https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz
+tar -xf v0.6.0.tar.gz
+cd glog-0.6.0
+make
+
+# Make glog available to conda
+cp build/*.so $CONDA_PREFIX/lib
+cp src/glog/*.h $CONDA_PREFIX/include/glog
+cp build/glog/*.h $CONDA_PREFIX/include/glog
+
+cd ../diplomacy_cicero
+
+# Download all decrypted models
+# Important: these are licensed materials, information below or on the original repository.
+# The url is known by the SAILING Lab
+wget <url of models directory>
+
+# Install python requirements
+pip install -r requirements.txt
+
+# Local pip installs
+pip install -e ./thirdparty/github/fairinternal/postman/nest/
+pip install -e ./thirdparty/github/fairinternal/postman/postman/
+pip install -e . -vv
+
+# Make sure Caffe2 will find cudNN
+export PATH=$CONDA_PREFIX/lib:$PATH
+export PATH=$CONDA_PREFIX/include:$PATH
+
+# Make
+make
+
+# Run unit tests
+make test_fast
+```
+
 ### Downloading model files
 
 Please email <diplomacyteam@meta.com> to request the password. Then run `bash bin/download_model_files.sh <PASSWORD>`. This will download and decrypt all relevant model files into `./models`. This might take awhile. Please note the model files have their own license separate from the code in this repository. More details on this [can be found below](#license-for-model-weights).
+
+The lab should already have access to the files.
 
 ### Accessing Cicero's experiment games
 
