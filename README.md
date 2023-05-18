@@ -37,8 +37,10 @@ conda install --yes pybind11
 # Install go for boringssl in grpc
 conda install --yes go protobuf=3.19.1
 
-# Move cudNN to $CONDA_PREFIX/lib if necessary
-# Note: cudNN should already be installed
+# Install cudNN and make sure it will be found by Caffe2
+conda install cudnn
+export PATH=$CONDA_PREFIX/lib:$PATH
+export PATH=$CONDA_PREFIX/include:$PATH
 
 # Get and compile glog
 wget https://github.com/google/glog/archive/refs/tags/v0.6.0.tar.gz
@@ -69,10 +71,6 @@ pip install -e . -vv
 # Check correct pytorch/torch installations
 conda list torch # should not display "cpu_only"
 python -c "import torch; print(torch.cuda.is_available())" # should print "True"
-
-# Make sure Caffe2 will find cudNN
-export PATH=$CONDA_PREFIX/lib:$PATH
-export PATH=$CONDA_PREFIX/include:$PATH
 
 # Make
 make
